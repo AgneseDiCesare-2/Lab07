@@ -24,4 +24,27 @@ class MeteoDao():
             cnx.close()
         return result
 
+    @staticmethod
+    def get_avg_umidita(mese):
+        cnx = DBConnect.get_connection()
+        result = {}
+
+        if cnx is None:
+            print("Connessione fallita")
+        else:
+            cursor = cnx.cursor(dictionary=True)
+            query = """SELECT Localita, AVG(Umidita) as Media
+                        FROM meteo.situazione
+                        where month(`Data`)=%s
+                        group by Localita"""
+            cursor.execute(query, (mese, ) ) #il risultato è univoco
+            #posso salvare il risultato in {Città: umidità}
+
+            for row in cursor:
+                result[row["Localita"]]= row["Media"]
+
+            cursor.close()
+            cnx.close()
+        return result
+
 

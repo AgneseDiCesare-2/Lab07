@@ -2,7 +2,7 @@ import flet as ft
 
 from UI.view import View
 from model.model import Model
-
+from model.situazione import Situazione
 
 class Controller:
     def __init__(self, view: View, model: Model):
@@ -14,9 +14,12 @@ class Controller:
         self._mese = 0
 
     def handle_umidita_media(self, e):
-        pass
-
-
+        self._view.lst_result.controls.clear()
+        avg=self._model.get_avg_umidita(self._mese)
+        for chiave in avg.keys():
+            self._view.lst_result.controls.append(ft.Text(f"{chiave}: {avg[chiave]}"))
+        self._view.update_page()
+        return
 
     def handle_sequenza(self, e):
         pass
