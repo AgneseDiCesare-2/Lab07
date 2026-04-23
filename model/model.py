@@ -1,6 +1,6 @@
 import copy
-from datetime import datetime
-from database.meteo_dao import MeteoDao
+from datetime import date
+
 
 class Model:
     def __init__(self):
@@ -10,16 +10,22 @@ class Model:
         self._umidita=0
 
     def get_avg_umidita(self, mese):
+        from database.meteo_dao import MeteoDao
         avg=MeteoDao().get_avg_umidita(mese) #dizionario
         return avg
 
     def leggi_umidita(self, citta, giorno):
+        from database.meteo_dao import MeteoDao
         situazioni=MeteoDao().leggi_umidita(citta) #lista di Situazioni
+        trovato=False
         for situazione in situazioni:
             if situazione.Data==giorno:
                 self._umidita=situazione.Umidita
-            else:
-                print("errore: valori non trovati")
+                trovato=True
+                break
+
+        if not trovato:
+            print("errore, valore non trovato!")
 
     def calcola_sequenza(self, mese):
         self._ricorsione([], ["Milano", "Torino", "Genova"], mese)
@@ -29,13 +35,12 @@ class Model:
 
     def controlla_tregiorni(self, parziale: list, i: str):
         l=len(parziale)
-        if l==0:
+        if l<=3:
             self._x=1
             return True
 
         elif parziale[-1]==i: #non sto cambiando città
             self._x=0 #non considero 100$
-
             return True
         #sto cambiando città --> devo controllare che quella di prima compaia tra volte di seguito
         else:
@@ -71,14 +76,12 @@ class Model:
                 if self.controlla_tregiorni(parziale, i) and self.controlla_seigiorni(parziale, i):
                     #imposta self._x
                     parziale.append(i)
-                    giorno = datetime(2023, mese, len(parziale))
+                    giorno = date(2023, mese, len(parziale))
                     self.leggi_umidita(i, giorno)
                     costo_soluzione+=self.calcola_costo_giorno(self._umidita, self._x)
-                    self._ricorsione(parziale, resto)
+                    self._ricorsione(parziale, resto, mese)
 
-                parziale.pop()
-
-
+                    parziale.pop()
 
 
 
