@@ -47,29 +47,24 @@ class MeteoDao:
         return result
 
     @staticmethod
-    def leggi_umidita(citta):
-        #poi filtrerò la data
+    def get_umidita_giorno(citta, giorno):
         cnx = DBConnect.get_connection()
-        result = []
-
         if cnx is None:
             print("Connessione fallita")
-        else:
-            cursor = cnx.cursor(dictionary=True)
-            query = """SELECT Localita, Data, Umidita
-                            FROM meteo.situazione
-                            where Localita=%s
-                    """
-            cursor.execute(query, (citta,))  # il risultato è univoco
-            # posso salvare il risultato in [situazione1, situazione2...]
+            return None
 
-            for row in cursor:
-                result.append(Situazione(row["Localita"],
-                                         row["Data"],
-                                         row["Umidita"]))
+        umidita = None
+        cursor = cnx.cursor(dictionary=True)
+        query = """SELECT Umidita
+                       FROM meteo.situazione
+                       WHERE Localita = %s AND Data = %s"""
+        cursor.execute(query, (citta, giorno))
+        row = cursor.fetchone()
+        if row is not None:
+            umidita = row["Umidita"]
 
-            cursor.close()
-            cnx.close()
-        return result
+        cursor.close()
+        cnx.close()
+        return umidita
 
 

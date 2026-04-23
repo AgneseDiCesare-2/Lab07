@@ -16,19 +16,15 @@ class Model:
 
     def leggi_umidita(self, citta, giorno):
         from database.meteo_dao import MeteoDao
-        situazioni=MeteoDao().leggi_umidita(citta) #lista di Situazioni
-        trovato=False
-        for situazione in situazioni:
-            if situazione.Data==giorno:
-                self._umidita=situazione.Umidita
-                trovato=True
-                break
-
-        if not trovato:
-            print("errore, valore non trovato!")
+        umidita = MeteoDao().get_umidita_giorno(citta, giorno)
+        if umidita is None:
+            return False
+        self._umidita = umidita
+        return True
 
     def calcola_sequenza(self, mese):
-        self._ricorsione([], ["Milano", "Torino", "Genova"], mese)
+        self._soluzione = {}
+        self._ricorsione([], ["Milano", "Torino", "Genova"], mese, 0)
         if not self._soluzione:
             return None, []
         prima_chiave = max(self._soluzione.keys())
@@ -67,7 +63,7 @@ class Model:
         return umidita + 100*x
 
     #parziale è la soluzione parziale, resto sono le città che non sono ancora state analizzate dal tecnico
-    def _ricorsione(self, parziale, resto, mese):
+    def _ricorsione(self, parziale, resto, mese, costo_parziale):
         costo_soluzione=0
         if (len(parziale) == 15): #tutte le città sono state analizzate
             self._soluzione[costo_soluzione]=parziale #dizionario
@@ -80,8 +76,8 @@ class Model:
                     parziale.append(i)
                     giorno = date(2013, mese, len(parziale))
                     self.leggi_umidita(i, giorno)
-                    costo_soluzione+=self.calcola_costo_giorno(self._umidita, self._x)
-                    self._ricorsione(parziale, resto, mese)
+                    costo_giornaliero = self.calcola_costo_giorno(self._umidita, self._x)
+                    self._ricorsione(parziale, resto, mese, costo_parziale + costo_giornaliero)
 
                     parziale.pop()
 

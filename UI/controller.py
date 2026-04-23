@@ -25,10 +25,17 @@ class Controller:
         pass
 
     def handle_sequenza(self, e):
-        lista_citta=self._model.calcola_sequenza(self._mese)
-        for citta in lista_citta:
-            self._view.lst_result.controls.append(ft.Text(citta))
+        self._view.lst_result.controls.clear()
+        costo, sequenza = self._model.calcola_sequenza(self._mese)
+        if not sequenza:
+            self._view.lst_result.controls.append(ft.Text("Nessuna sequenza trovata."))
             self._view.update_page()
+            return
+
+        self._view.lst_result.controls.append(ft.Text(f"Costo totale: {costo:.2f}"))
+        for giorno, citta in enumerate(sequenza, start=1):
+            self._view.lst_result.controls.append(ft.Text(f"Giorno {giorno}: {citta}"))
+        self._view.update_page()
         return
 
     def read_mese(self, e):
