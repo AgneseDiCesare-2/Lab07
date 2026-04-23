@@ -21,8 +21,15 @@ class Controller:
         self._view.update_page()
         return
 
-    def handle_sequenza(self, e):
+    def leggi_umidita(self, e):
         pass
+
+    def handle_sequenza(self, e):
+        lista_citta=self._model.calcola_sequenza(self._mese)
+        for citta in lista_citta:
+            self._view.lst_result.controls.append(ft.Text(citta))
+            self._view.update_page()
+        return
 
     def read_mese(self, e):
         self._mese = int(e.control.value)
