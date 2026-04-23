@@ -32,9 +32,9 @@ class Controller:
             self._view.update_page()
             return
 
-        self._view.lst_result.controls.append(ft.Text(f"Costo totale: {costo:.2f}"))
+        self._view.lst_result.controls.append(ft.Text(f"La sequenza ottima ha costo {costo:.2f}, ed è:"))
         for giorno, citta in enumerate(sequenza, start=1):
-            self._view.lst_result.controls.append(ft.Text(f"Giorno {giorno}: {citta}"))
+            self._view.lst_result.controls.append(ft.Text(f"{citta}"))
         self._view.update_page()
         return
 
