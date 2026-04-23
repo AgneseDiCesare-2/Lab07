@@ -29,8 +29,10 @@ class Model:
 
     def calcola_sequenza(self, mese):
         self._ricorsione([], ["Milano", "Torino", "Genova"], mese)
-        dizionario_ordinato=sorted(self._soluzione, reverse=True) #ordino per costo decrescente --> restituisce una lista di valori
-        prima_chiave, primo_valore = dizionario_ordinato[0]
+        if not self._soluzione:
+            return None, []
+        prima_chiave = max(self._soluzione.keys())
+        primo_valore = self._soluzione[prima_chiave]
         return prima_chiave, primo_valore
 
     def controlla_tregiorni(self, parziale: list, i: str):
@@ -76,7 +78,7 @@ class Model:
                 if self.controlla_tregiorni(parziale, i) and self.controlla_seigiorni(parziale, i):
                     #imposta self._x
                     parziale.append(i)
-                    giorno = date(2023, mese, len(parziale))
+                    giorno = date(2013, mese, len(parziale))
                     self.leggi_umidita(i, giorno)
                     costo_soluzione+=self.calcola_costo_giorno(self._umidita, self._x)
                     self._ricorsione(parziale, resto, mese)
